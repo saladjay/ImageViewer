@@ -1,0 +1,33 @@
+﻿<Window x:Class="ImageViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ImageViewer"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="960" Width="1080" Name="window">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Width" Value="100"></Setter>
+            <Setter Property="Height" Value="30"></Setter>
+            <Setter Property="Margin" Value="5"></Setter>
+        </Style>
+    </Window.Resources>
+    <DockPanel LastChildFill="True">
+        <DockPanel DockPanel.Dock="Right" LastChildFill="True" Width="150">
+            <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
+                <Button Click="Button_Click">open image dir</Button>
+                <Button Click="Button_Click_1">open label dir</Button>
+                <Button Click="Button_Click_2">previous</Button>
+                <Button Click="Button_Click_3">next</Button>
+                <Button Click="Button_Click_4">mark</Button>
+                <TextBlock Name="is_marked" Width="100" Height="30" Margin="5"></TextBlock>
+                <TextBlock Name="mark_count" Width="100" Height="30" Margin="5"></TextBlock>
+            </StackPanel>
+            <TextBlock DockPanel.Dock="Bottom" Margin="10" Name="label"></TextBlock>
+        </DockPanel>
+        <Canvas Name="canvas" MouseWheel="canvas_MouseWheel">
+            <Image Name="image" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"></Image>
+        </Canvas>
+    </DockPanel>
+</Window>
