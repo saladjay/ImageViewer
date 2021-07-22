@@ -33,7 +33,7 @@
         </DockPanel>
         <ScrollViewer>
         <Canvas Name="canvas">
-            <Image Name="image" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseWheel="image_MouseWheel" MouseMove="image_MouseMove" MouseDown="image_MouseDown"></Image>
+            <Image Name="image" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseWheel="image_MouseWheel" MouseMove="image_MouseMove" MouseDown="image_MouseDown" MouseUp="image_MouseUp"></Image>
         </Canvas>
         </ScrollViewer>
     </DockPanel>

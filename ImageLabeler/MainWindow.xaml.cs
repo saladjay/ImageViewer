@@ -73,11 +73,19 @@ namespace ImageLabeler
                 }
 
             }
-            foreach (Rectangle rect in canvas.Children)
+            foreach (UIElement element in canvas.Children)
             {
+                var rect = element as Rectangle;
                 if (rect!=null)
                 {
-                    Canvas.SetTop(rect,Canvas.GetTop())
+                    var list = rect.Tag as List<Point>;
+                    if (list!=null)
+                    {
+                        Canvas.SetTop(rect, list[0].Y * scaleRaito);
+                        Canvas.SetLeft(rect, list[0].X * scaleRaito);
+                        rect.Width = (list[1].X - list[0].X) * scaleRaito;
+                        rect.Height = (list[1].Y - list[0].Y) * scaleRaito;
+                    }
                 }
             }
         }
@@ -100,13 +108,27 @@ namespace ImageLabeler
 
         Point start, end;
         Point startWithScale, endWithScale;
+
+        private void image_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (rect!=null)
+            {
+                var list = rect.Tag as List<Point>;
+                if (list!=null)
+                {
+                    list.Add(e.GetPosition((Image)sender));
+                }
+            }
+        }
+
         private void image_MouseDown(object sender, MouseButtonEventArgs e)
         {
             rect = new Rectangle();
-            
+            rect.MouseUp += Rect_MouseUp;
             rect.StrokeThickness = 3;
             rect.Stroke = Brushes.Red;
             var point = e.GetPosition((Image)sender);
+            rect.Tag = new List<Point>() { point };
             start = point;
             var x = point.X * scaleRaito;
             var y = point.Y * scaleRaito;
@@ -114,6 +136,18 @@ namespace ImageLabeler
             Canvas.SetLeft(rect, x);
             Canvas.SetTop(rect, y);
             canvas.Children.Add(rect);
+        }
+
+        private void Rect_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (rect != null)
+            {
+                var list = rect.Tag as List<Point>;
+                if (list != null)
+                {
+                    list.Add(e.GetPosition((Image)image));
+                }
+            }
         }
     }
 
