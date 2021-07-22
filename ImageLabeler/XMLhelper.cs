@@ -232,6 +232,7 @@ namespace ImageLabeler
 
         public xmlfile(string fileName,ImageProperty imageProperty, params detectionObject[] nodes):
             this(new Node("filename",fileName), imageProperty, nodes) { }
+        
     }
 
     public enum PresetNodeType

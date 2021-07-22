@@ -121,6 +121,29 @@ namespace ImageLabeler
             }
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (UIElement item in canvas.Children)
+            {
+                var rect = item as Rectangle;
+                if (rect != null)
+                {
+                    var list = rect.Tag as List<Point>;
+                    if (list != null)
+                    {
+                        
+                    }
+                    detectionObject[] nodes = new detectionObject[2];
+                    xmlfile aaa = new xmlfile("aaaa.png", new ImageProperty(500, 300, false, new Node("device", "EX", "EX is new device")), nodes);
+                    XMLhelper xl = new XMLhelper();
+                    xl.AddDeclaration("1.0", "utf-8", "true");
+                    xl.BuildXML(aaa);
+                    xl.Save("aaaa.xml");
+
+                }
+            }
+        }
+
         private void image_MouseDown(object sender, MouseButtonEventArgs e)
         {
             rect = new Rectangle();

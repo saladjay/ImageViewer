@@ -20,7 +20,7 @@
                 <Button >open label dir</Button>
                 <Button >previous</Button>
                 <Button >next</Button>
-                <Button >mark</Button>
+                <Button Click="Button_Click">mark</Button>
                 <TextBlock Name="is_marked" Width="100" Height="30" Margin="5"></TextBlock>
                 <TextBlock Name="mark_count" Width="100" Height="30" Margin="5"></TextBlock>
                 <TextBlock Name="mouseX" Width="100" Height="100" Margin="5"></TextBlock>
