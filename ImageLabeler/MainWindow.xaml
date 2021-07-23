@@ -31,11 +31,13 @@
             </StackPanel>
             <TextBlock DockPanel.Dock="Bottom" Margin="10" Name="label"></TextBlock>
         </DockPanel>
-        <ScrollViewer>
-        <Canvas Name="canvas">
-            <Image Name="image" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseWheel="image_MouseWheel" MouseMove="image_MouseMove" MouseDown="image_MouseDown" MouseUp="image_MouseUp"></Image>
-        </Canvas>
-        </ScrollViewer>
+        <!--<Viewbox x:Name="vb" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">-->
+            <Canvas Name="canvas" >
+                <Image Name="image" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseWheel="image_MouseWheel" MouseMove="image_MouseMove" MouseDown="image_MouseDown" MouseUp="image_MouseUp"></Image>
+                <!--<local:BBox Width="100" Height="100" Stroke="Red" Opacity="0.5" Canvas.Left="100" RectangleStrokeThickness="3" Canvas.Top="520"></local:BBox>-->
+            <Path x:Name="aaa" Stroke="Red" StrokeThickness="10"></Path>
+            </Canvas>
+        <!--</Viewbox>-->
     </DockPanel>
 
 </Window>
