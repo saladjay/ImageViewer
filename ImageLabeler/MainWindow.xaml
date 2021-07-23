@@ -20,7 +20,7 @@
                 <Button >open label dir</Button>
                 <Button >previous</Button>
                 <Button >next</Button>
-                <Button Click="Button_Click">mark</Button>
+                <Button >mark</Button>
                 <TextBlock Name="is_marked" Width="100" Height="30" Margin="5"></TextBlock>
                 <TextBlock Name="mark_count" Width="100" Height="30" Margin="5"></TextBlock>
                 <TextBlock Name="mouseX" Width="100" Height="100" Margin="5"></TextBlock>
@@ -32,12 +32,12 @@
             <TextBlock DockPanel.Dock="Bottom" Margin="10" Name="label"></TextBlock>
         </DockPanel>
         <!--<Viewbox x:Name="vb" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">-->
-            <Canvas Name="canvas" >
-                <Image Name="image" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseWheel="image_MouseWheel" MouseMove="image_MouseMove" MouseDown="image_MouseDown" MouseUp="image_MouseUp"></Image>
-                <!--<local:BBox Width="100" Height="100" Stroke="Red" Opacity="0.5" Canvas.Left="100" RectangleStrokeThickness="3" Canvas.Top="520"></local:BBox>-->
+        <Canvas Name="canvas" >
+            <Image Name="image" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseWheel="image_MouseWheel" MouseMove="image_MouseMove" MouseDown="image_MouseDown" MouseUp="image_MouseUp"></Image>
+            <!--<local:BBox Width="100" Height="100" Stroke="Red" Opacity="0.5" Canvas.Left="100" RectangleStrokeThickness="3" Canvas.Top="520"></local:BBox>-->
             <Path x:Name="aaa" Stroke="Red" StrokeThickness="10"></Path>
-            <Button> aaaaa</Button>
-            </Canvas>
+            <Button Canvas.Top="50" Canvas.Left="50">aaaaa</Button>
+        </Canvas>
         <!--</Viewbox>-->
     </DockPanel>
 
