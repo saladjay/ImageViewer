@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,32 +28,9 @@ namespace ImageLabeler
 
             BitmapImage bitmap = new BitmapImage();
             bitmap.BeginInit();
-            bitmap.UriSource = new Uri(@"C:\Users\Administrator\Desktop\新建文件夹\1.jpg");
+            bitmap.UriSource = new Uri(@"E:\rearrange_package_images_and_labels\SentryAndEX\detect_for_SentryAndEX\20210704\exp\00a8d78c390415ccb2fb4e854199499.jpg");
             bitmap.EndInit();
             image.Source = bitmap;
-
-            aaa.Data = GenerateMyWeirdGeometry();
-        }
-
-        private Geometry GenerateMyWeirdGeometry()
-        {
-            Debug.WriteLine("geometry");
-            Debug.WriteLine(DateTime.Now.Ticks);
-            StreamGeometry geom = new StreamGeometry();
-            using (StreamGeometryContext gc = geom.Open())
-            {
-                // isFilled = false, isClosed = true
-                gc.BeginFigure(new Point(0.0, 0.0), true, true);
-                gc.LineTo(new Point(50, 0), true, true);
-                gc.LineTo(new Point(50, 100), true, true);
-                gc.LineTo(new Point(0, 100), true, true);
-                gc.LineTo(new Point(0, 0), true, true);
-                gc.Close();
-
-            }
-            //Debug.WriteLine(Width);
-            //Debug.WriteLine(Height);
-            return geom;
         }
 
         public void SaveXML()
@@ -76,37 +52,58 @@ namespace ImageLabeler
         private void image_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             var delta = e.Delta / 120;
-
-            if (canvas.RenderTransform is ScaleTransform)
+            if (sender is Image)
             {
-                var st = canvas.RenderTransform as ScaleTransform;
-                st.ScaleX = st.ScaleX + 0.1 * delta;
-                st.ScaleY = st.ScaleY + 0.1 * delta;
-                scaleRaito = st.ScaleX;
+                Image sf = sender as Image;
+                if (sf.RenderTransform is ScaleTransform)
+                {
+                    var st = sf.RenderTransform as ScaleTransform;
+                    st.ScaleX = st.ScaleX + 0.1 * delta;
+                    st.ScaleY = st.ScaleY + 0.1 * delta;
+                    scaleRaito = st.ScaleX;
+                }
+                else
+                {
+                    ScaleTransform st = new ScaleTransform();
+                    st.ScaleX = 1 + 0.1 * delta;
+                    st.ScaleY = 1 + 0.1 * delta;
+                    sf.RenderTransform = st;
+                    scaleRaito = st.ScaleX;
+
+                }
+
             }
-            else
+            foreach (UIElement element in canvas.Children)
             {
-                ScaleTransform st = new ScaleTransform();
-                st.ScaleX = 1 + 0.1 * delta;
-                st.ScaleY = 1 + 0.1 * delta;
-                canvas.RenderTransform = st;
-                scaleRaito = st.ScaleX;
+                var rect = element as Rectangle;
+                if (rect!=null)
+                {
+                    var list = rect.Tag as List<Point>;
+                    if (list!=null)
+                    {
+                        Canvas.SetTop(rect, list[0].Y * scaleRaito);
+                        Canvas.SetLeft(rect, list[0].X * scaleRaito);
+                        rect.Width = (list[1].X - list[0].X) * scaleRaito;
+                        rect.Height = (list[1].Y - list[0].Y) * scaleRaito;
+                    }
+                }
             }
-
-            return;
-
         }
 
-        BBox rect = null;
+        Rectangle rect = null;
 
         private void image_MouseMove(object sender, MouseEventArgs e)
         {
-            //var position = e.GetPosition((Image)sender);
-            //if (rect == null)
-            //{
-            //    return;
-            //}
-            //rect.SecondPoint = position;
+            var position = e.GetPosition((Image)sender);
+            mouseX.Text = position.X.ToString();
+            mouseY.Text = position.Y.ToString();
+            scaleR.Text = scaleRaito.ToString();
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                rect.Width = position.X * scaleRaito - startWithScale.X;
+                rect.Height = position.Y * scaleRaito - startWithScale.Y;
+            }
+
         }
 
         Point start, end;
@@ -114,13 +111,14 @@ namespace ImageLabeler
 
         private void image_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            var bbox = sender as BBox;
-            if (bbox!=null)
+            if (rect!=null)
             {
-                bbox.SecondPoint = e.GetPosition(image);
+                var list = rect.Tag as List<Point>;
+                if (list!=null)
+                {
+                    list.Add(e.GetPosition((Image)sender));
+                }
             }
-            rect = null;
-            
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -148,216 +146,43 @@ namespace ImageLabeler
 
         private void image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            rect = new BBox();
+            rect = new Rectangle();
             rect.MouseUp += Rect_MouseUp;
-            rect.RectangleStrokeThickness = 8;
-            //rect.Stroke = Brushes.Red;
-            rect.Opacity = 0.5;
+            rect.StrokeThickness = 3;
+            rect.Stroke = Brushes.Red;
             var point = e.GetPosition((Image)sender);
-            
-            rect.FirstPoint = point;
-
-            Canvas.SetLeft(rect, point.X);
-            Canvas.SetTop(rect, point.Y);
+            rect.Tag = new List<Point>() { point };
+            start = point;
+            var x = point.X * scaleRaito;
+            var y = point.Y * scaleRaito;
+            startWithScale = new Point(x, y);
+            Canvas.SetLeft(rect, x);
+            Canvas.SetTop(rect, y);
             canvas.Children.Add(rect);
         }
 
         private void Rect_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            var bbox = sender as BBox;
-            if (bbox != null)
+            if (rect != null)
             {
-                bbox.SecondPoint = e.GetPosition(image);
+                var list = rect.Tag as List<Point>;
+                if (list != null)
+                {
+                    list.Add(e.GetPosition((Image)image));
+                }
             }
-            rect = null;
         }
     }
 
 
-    public class BBox : Control
+    public class BBox : Shape
     {
-
-
-        public bool IsEdit
+        protected override Geometry DefiningGeometry
         {
-            get { return (bool)GetValue(IsEditProperty); }
-            set { SetValue(IsEditProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for IsEdit.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsEditProperty =
-            DependencyProperty.Register("IsEdit", typeof(bool), typeof(BBox), new PropertyMetadata(true));
-
-
-
-        public Point FirstPoint
-        {
-            get { return (Point)GetValue(FirstPointProperty); }
-            set { SetValue(FirstPointProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for LeftTop.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty FirstPointProperty =
-            DependencyProperty.Register("FirstPoint", typeof(Point), typeof(BBox), new PropertyMetadata(new Point(0, 0), OnFirstPointChanged));
-
-        private static void OnFirstPointChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is BBox bbox)
+            get
             {
-                if (bbox.SecondPoint.X==0&&bbox.SecondPoint.Y==0)
-                {
-                    bbox.SecondPoint = bbox.FirstPoint;
-                }
-                bbox.Width = Math.Abs(bbox.FirstPoint.X - bbox.SecondPoint.X);
-                bbox.Height = Math.Abs(bbox.FirstPoint.Y - bbox.SecondPoint.Y);
-
-                Canvas.SetLeft(bbox, Math.Min(bbox.FirstPoint.X, bbox.SecondPoint.X));
-                Canvas.SetTop(bbox, Math.Min(bbox.FirstPoint.Y, bbox.SecondPoint.Y));
+                throw new NotImplementedException();
             }
         }
-
-        public Point SecondPoint
-        {
-            get { return (Point)GetValue(SecondPointProperty); }
-            set { SetValue(SecondPointProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for RightBottom.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty SecondPointProperty =
-            DependencyProperty.Register("SecondPoint", typeof(Point), typeof(BBox), new PropertyMetadata(new Point(0, 0), OnSecondPointPropertyChanged));
-
-        private static void OnSecondPointPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            Debug.WriteLine("second");
-            Debug.WriteLine(DateTime.Now.Ticks);
-            if (d is BBox bbox)
-            {
-                bbox.Width = Math.Abs(bbox.FirstPoint.X - bbox.SecondPoint.X);
-                bbox.Height = Math.Abs(bbox.FirstPoint.Y - bbox.SecondPoint.Y);
-
-                Canvas.SetLeft(bbox, Math.Min(bbox.FirstPoint.X, bbox.SecondPoint.X));
-                Canvas.SetTop(bbox, Math.Min(bbox.FirstPoint.Y, bbox.SecondPoint.Y));
-            }
-
-        }
-
-
-
-        public double RectangleStrokeThickness
-        {
-            get { return (double)GetValue(RectangleStrokeThicknessProperty); }
-            set { SetValue(RectangleStrokeThicknessProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for StrokeThiness.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty RectangleStrokeThicknessProperty =
-            DependencyProperty.Register("RectangleStrokeThicknessProperty", typeof(double), typeof(BBox), new PropertyMetadata(10));
-
-
-
-
-        public BBox()
-        {
-            
-        }
-
-        Point _moveStartPoint, _oriFirstPoint, _oriSecondPoint;
-        protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
-        {
-            if (IsEdit==false)
-            {
-                return;
-            }
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                _moveStartPoint = e.GetPosition((Panel)this.Parent);
-                _oriFirstPoint = FirstPoint;
-                _oriSecondPoint = SecondPoint;
-            }
-            base.OnMouseDown(e);
-        }
-
-        protected override void OnMouseUp(MouseButtonEventArgs e)
-        {
-            if (IsEdit == false)
-            {
-                return;
-            }
-            if (e.LeftButton== MouseButtonState.Released)
-            {
-                _oriFirstPoint = FirstPoint;
-                _oriSecondPoint = SecondPoint;
-            }
-            base.OnMouseUp(e);
-        }
-
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            if (IsEdit == false)
-            {
-                return;
-            }
-            if (e.LeftButton== MouseButtonState.Pressed)
-            {
-                var dist = e.GetPosition((Panel)this.Parent) - _moveStartPoint;
-                FirstPoint = _oriFirstPoint + dist;
-                SecondPoint = _oriSecondPoint + dist;
-            }
-            base.OnMouseMove(e);
-        }
-
-        protected override void OnIsMouseDirectlyOverChanged(DependencyPropertyChangedEventArgs e)
-        {
-            base.OnIsMouseDirectlyOverChanged(e);
-        }
-
-        protected override void OnMouseEnter(MouseEventArgs e)
-        {
-            if (e.LeftButton== MouseButtonState.Released)
-            {
-                this.RectangleStrokeThickness = 2 * RectangleStrokeThickness;
-            }
-            base.OnMouseEnter(e);
-        }
-
-        protected override void OnMouseLeave(MouseEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Released)
-            {
-                this.RectangleStrokeThickness = RectangleStrokeThickness / 2;
-            }
-            base.OnMouseLeave(e);
-        }
-
-
-
-        protected  Geometry DefiningGeometry
-        {
-            get { return GenerateMyWeirdGeometry(); }
-        }
-
-        private Geometry GenerateMyWeirdGeometry()
-        {
-            Debug.WriteLine("geometry");
-            Debug.WriteLine(DateTime.Now.Ticks);
-            StreamGeometry geom = new StreamGeometry();
-            using (StreamGeometryContext gc = geom.Open())
-            {
-                var diff = SecondPoint - FirstPoint;
-                // isFilled = false, isClosed = true
-                gc.BeginFigure(new Point(0.0, 0.0), true, true);
-                gc.LineTo(new Point(Width, 0), true, true);
-                gc.LineTo(new Point(Width, Height), true, true);
-                gc.LineTo(new Point(0, Height), true, true);
-                gc.LineTo(new Point(0, 0), true, true);
-                gc.Close();
-                
-            }
-            //Debug.WriteLine(Width);
-            //Debug.WriteLine(Height);
-            return geom;
-        }
-
-
     }
 }
