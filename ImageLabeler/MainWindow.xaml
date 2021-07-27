@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:JLib="clr-namespace:JayCustomControlLib;assembly=JayCustomControlLib"
         xmlns:local="clr-namespace:ImageLabeler"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525" Name="mainwindow">
@@ -33,10 +34,14 @@
         </DockPanel>
         <!--<Viewbox x:Name="vb" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">-->
         <Canvas Name="canvas" >
-            <Image Name="image" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseWheel="image_MouseWheel" MouseMove="image_MouseMove" MouseDown="image_MouseDown" MouseUp="image_MouseUp"></Image>
-            <!--<local:BBox Width="100" Height="100" Stroke="Red" Opacity="0.5" Canvas.Left="100" RectangleStrokeThickness="3" Canvas.Top="520"></local:BBox>-->
-            <Path x:Name="aaa" Stroke="Red" StrokeThickness="10"></Path>
-            <Button Canvas.Top="50" Canvas.Left="50">aaaaa</Button>
+            <Image Name="image"></Image>
+            <!--<Image Name="image" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MouseWheel="image_MouseWheel" MouseMove="image_MouseMove" MouseDown="image_MouseDown" MouseUp="image_MouseUp"></Image>-->
+            <!--<local:BoundingBox Width="100" Height="100" Foreground="White" Background="Red"></local:BoundingBox>-->
+            <JLib:EditedShapeContentControl Width="100" Height="100">
+                <Button >aaaaa</Button>
+
+            </JLib:EditedShapeContentControl>
+            <!--<Path x:Name="aaa" Stroke="Red" StrokeThickness="10"></Path>-->
         </Canvas>
         <!--</Viewbox>-->
     </DockPanel>

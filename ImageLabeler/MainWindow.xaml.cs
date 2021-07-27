@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JayCustomControlLib;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -29,11 +30,11 @@ namespace ImageLabeler
 
             BitmapImage bitmap = new BitmapImage();
             bitmap.BeginInit();
-            bitmap.UriSource = new Uri(@"C:\Users\Administrator\Desktop\新建文件夹\1.jpg");
+            bitmap.UriSource = new Uri(@"C:\Users\yll\Desktop\新建文件夹\1.jpg");
             bitmap.EndInit();
             image.Source = bitmap;
 
-            aaa.Data = GenerateMyWeirdGeometry();
+            //aaa.Data = GenerateMyWeirdGeometry();
         }
 
         private Geometry GenerateMyWeirdGeometry()
@@ -151,10 +152,23 @@ namespace ImageLabeler
     }
 
 
+
+    [TemplatePart(Name = "TopEdge", Type = typeof(EditedShapeThumb))]
+    [TemplatePart(Name = "LeftEdge", Type = typeof(EditedShapeThumb))]
+    [TemplatePart(Name = "RightEdge", Type = typeof(EditedShapeThumb))]
+    [TemplatePart(Name = "BottomEdge", Type = typeof(EditedShapeThumb))]
+
+    [TemplatePart(Name = "TopMidBox", Type = typeof(EditedShapeThumb))]
+    [TemplatePart(Name = "RightMidBox", Type = typeof(EditedShapeThumb))]
+    [TemplatePart(Name = "LeftMidBox", Type = typeof(EditedShapeThumb))]
+    [TemplatePart(Name = "BottomMidBox", Type = typeof(EditedShapeThumb))]
+
+    [TemplatePart(Name = "TopLeftCornerBox", Type = typeof(EditedShapeThumb))]
+    [TemplatePart(Name = "TopRightCornerBox", Type = typeof(EditedShapeThumb))]
+    [TemplatePart(Name = "BottomLeftCornerBox", Type = typeof(EditedShapeThumb))]
+    [TemplatePart(Name = "BottomRightCornerBox", Type = typeof(EditedShapeThumb))]
     public class BBox : Control
     {
-
-
         public bool IsEdit
         {
             get { return (bool)GetValue(IsEditProperty); }
@@ -190,6 +204,7 @@ namespace ImageLabeler
 
                 Canvas.SetLeft(bbox, Math.Min(bbox.FirstPoint.X, bbox.SecondPoint.X));
                 Canvas.SetTop(bbox, Math.Min(bbox.FirstPoint.Y, bbox.SecondPoint.Y));
+                bbox.GenerateMyWeirdGeometry();
             }
         }
 
@@ -214,11 +229,9 @@ namespace ImageLabeler
 
                 Canvas.SetLeft(bbox, Math.Min(bbox.FirstPoint.X, bbox.SecondPoint.X));
                 Canvas.SetTop(bbox, Math.Min(bbox.FirstPoint.Y, bbox.SecondPoint.Y));
+                bbox.GenerateMyWeirdGeometry();
             }
-
         }
-
-
 
         public double RectangleStrokeThickness
         {
@@ -228,7 +241,19 @@ namespace ImageLabeler
 
         // Using a DependencyProperty as the backing store for StrokeThiness.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty RectangleStrokeThicknessProperty =
-            DependencyProperty.Register("RectangleStrokeThicknessProperty", typeof(double), typeof(BBox), new PropertyMetadata(10));
+            DependencyProperty.Register("RectangleStrokeThicknessProperty", typeof(double), typeof(BBox), new PropertyMetadata(10.0));
+
+
+
+        public Geometry BoundingBox
+        {
+            get { return (Geometry)GetValue(BoundingBoxProperty); }
+            private set { SetValue(BoundingBoxProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for BoundingBox.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty BoundingBoxProperty =
+            DependencyProperty.Register("BoundingBox", typeof(Geometry), typeof(BBox), new PropertyMetadata(default(Geometry)));
 
 
 
@@ -306,17 +331,8 @@ namespace ImageLabeler
             base.OnMouseLeave(e);
         }
 
-
-
-        protected Geometry DefiningGeometry
+        private void GenerateMyWeirdGeometry()
         {
-            get { return GenerateMyWeirdGeometry(); }
-        }
-
-        private Geometry GenerateMyWeirdGeometry()
-        {
-            Debug.WriteLine("geometry");
-            Debug.WriteLine(DateTime.Now.Ticks);
             StreamGeometry geom = new StreamGeometry();
             using (StreamGeometryContext gc = geom.Open())
             {
@@ -328,13 +344,49 @@ namespace ImageLabeler
                 gc.LineTo(new Point(0, Height), true, true);
                 gc.LineTo(new Point(0, 0), true, true);
                 gc.Close();
-
             }
-            //Debug.WriteLine(Width);
-            //Debug.WriteLine(Height);
-            return geom;
+            this.BoundingBox = geom;
         }
 
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            if (this.GetTemplateChild("TopEdge") is EditedShapeThumb topEdge)
+                topEdge.ContentControl = this;
+
+            if (this.GetTemplateChild("LeftEdge") is EditedShapeThumb leftEdge)
+                leftEdge.ContentControl = this;
+
+            if (this.GetTemplateChild("RightEdge") is EditedShapeThumb RightEdge)
+                RightEdge.ContentControl = this;
+
+            if (this.GetTemplateChild("BottomEdge") is EditedShapeThumb BottomEdge)
+                BottomEdge.ContentControl = this;
+
+            if (this.GetTemplateChild("TopMidBox") is EditedShapeThumb topMidEdge)
+                topMidEdge.ContentControl = this;
+
+            if (this.GetTemplateChild("RightMidBox") is EditedShapeThumb rightMidEdge)
+                rightMidEdge.ContentControl = this;
+
+            if (this.GetTemplateChild("LeftMidBox") is EditedShapeThumb leftMidEdge)
+                leftMidEdge.ContentControl = this;
+
+            if (this.GetTemplateChild("BottomMidBox") is EditedShapeThumb bottomMidEdge)
+                bottomMidEdge.ContentControl = this;
+
+            if (this.GetTemplateChild("TopLeftCornerBox") is EditedShapeThumb topLeftCornerBox)
+                topLeftCornerBox.ContentControl = this;
+
+            if (this.GetTemplateChild("TopRightCornerBox") is EditedShapeThumb topRightCornerBox)
+                topRightCornerBox.ContentControl = this;
+
+            if (this.GetTemplateChild("BottomLeftCornerBox") is EditedShapeThumb bottomLeftCornerBox)
+                bottomLeftCornerBox.ContentControl = this;
+
+            if (this.GetTemplateChild("BottomRightCornerBox") is EditedShapeThumb bottomRightCornerBox)
+                bottomRightCornerBox.ContentControl = this;
+        }
 
     }
 }

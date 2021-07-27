@@ -1,0 +1,46 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:JLib="clr-namespace:JayCustomControlLib;assembly=JayCustomControlLib"
+    xmlns:local="clr-namespace:ImageLabeler">
+
+
+    <Style TargetType="{x:Type local:BoundingBox}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:BoundingBox}">
+                    <Grid  Name="grid" Margin="2" Background="{TemplateBinding Background}">
+                        <JLib:EditedShapeThumb Height="3" x:Name="TopEdge" Cursor="SizeNS" Margin="0 -4 0 0" Background="Gray" Opacity="0.5"
+           VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
+                        <JLib:EditedShapeThumb Width="3" x:Name="LeftEdge" Cursor="SizeWE" Margin="-4 0 0 0" Background="Gray" Opacity="0.5"
+           VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
+                        <JLib:EditedShapeThumb Width="3" x:Name="RightEdge" Cursor="SizeWE" Margin="0 0 -4 0" Background="Gray" Opacity="0.5"
+           VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
+                        <JLib:EditedShapeThumb Height="3" x:Name="BottomEdge" Cursor="SizeNS" Margin="0 0 0 -4" Background="Gray" Opacity="0.5"
+           VerticalAlignment="Bottom"  HorizontalAlignment="Stretch"/>
+
+                        <JLib:EditedShapeThumb Width="7" Height="7" x:Name="TopMidBox" Cursor="SizeNS" Margin="0 -6 0 0" Background="Black"
+           VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                        <JLib:EditedShapeThumb Width="7" Height="7" x:Name="RightMidBox" Cursor="SizeWE" Margin="0 0 -6 0" Background="Black"
+           VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        <JLib:EditedShapeThumb Width="7" Height="7" x:Name="BottomMidBox" Cursor="SizeNS" Margin="0 0 0 -6" Background="Black"
+           VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+                        <JLib:EditedShapeThumb Width="7" Height="7" x:Name="LeftMidBox" Cursor="SizeWE" Margin="-6 0 0 0" Background="Black"
+           VerticalAlignment="Center" HorizontalAlignment="Left"/>
+
+
+                        <JLib:EditedShapeThumb Width="7" Height="7" x:Name="TopLeftCornerBox" Cursor="SizeNWSE" Margin="-6 -6 0 0" Background="Black"
+           VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                        <JLib:EditedShapeThumb Width="7" Height="7" x:Name="TopRightCornerBox" Cursor="SizeNESW" Margin="0 -6 -6 0" Background="Black"
+           VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                        <JLib:EditedShapeThumb Width="7" Height="7" x:Name="BottomLeftCornerBox" Cursor="SizeNESW" Margin="-6 0 0 -6" Background="Black"
+           VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                        <JLib:EditedShapeThumb Width="7" Height="7" x:Name="BottomRightCornerBox" Cursor="SizeNWSE" Margin="0 0 -6 -6" Background="Black"
+           VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+                        <!--<Path Data="{TemplateBinding BoundingBox}" Stroke="{TemplateBinding Foreground}" StrokeThickness="{TemplateBinding RectangleStrokeThickness}"></Path>-->
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
