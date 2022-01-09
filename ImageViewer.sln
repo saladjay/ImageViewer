@@ -1,11 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageViewer", "ImageViewer\ImageViewer.csproj", "{4C69406C-0ACA-47A7-AF27-96CBC75F1E87}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageLabeler", "ImageLabeler\ImageLabeler.csproj", "{148A786B-82E7-4B79-A5B1-267F109CB3A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XML", "XML\XML.csproj", "{DBE35D6D-94B3-48FD-8DE6-33CC3212C3ED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{71279376-01C1-4A44-9FA4-57C617D3DB2F}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +28,15 @@ Global
 		{148A786B-82E7-4B79-A5B1-267F109CB3A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{148A786B-82E7-4B79-A5B1-267F109CB3A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{148A786B-82E7-4B79-A5B1-267F109CB3A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBE35D6D-94B3-48FD-8DE6-33CC3212C3ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBE35D6D-94B3-48FD-8DE6-33CC3212C3ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBE35D6D-94B3-48FD-8DE6-33CC3212C3ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBE35D6D-94B3-48FD-8DE6-33CC3212C3ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {501C94F7-EE1C-4E2B-A002-421A921BCF2D}
 	EndGlobalSection
 EndGlobal

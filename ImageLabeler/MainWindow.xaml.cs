@@ -1,7 +1,9 @@
 ﻿using JayCustomControlLib;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
 
 namespace ImageLabeler
 {
@@ -23,55 +26,136 @@ namespace ImageLabeler
     public partial class MainWindow : Window
     {
         private double scaleRaito = 1;
+        private VOC_XML currentVOC = null;
+        
+        private struct AnnotatoerConfig
+        {
+            public string imageName;
+            public string VOCXMLFolder;
+            public string VOCImageFolder;
+            public int imageIndex;
+        }
+
+        private string[] imageFiles = null;
+        private string[] labelFiles = null;
+        private AnnotatoerConfig config;
 
         public MainWindow()
         {
             InitializeComponent();
-
-            BitmapImage bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.UriSource = new Uri(@"E:\package_analysis\ImageViewer\samples\1.jpg");
-            bitmap.EndInit();
-            image.Source = bitmap;
-
-            //aaa.Data = GenerateMyWeirdGeometry();
-        }
-
-        private Geometry GenerateMyWeirdGeometry()
-        {
-            Debug.WriteLine("geometry");
-            Debug.WriteLine(DateTime.Now.Ticks);
-            StreamGeometry geom = new StreamGeometry();
-            using (StreamGeometryContext gc = geom.Open())
+            if (!string.IsNullOrWhiteSpace(config.VOCImageFolder) && Directory.Exists(config.VOCImageFolder))
             {
-                // isFilled = false, isClosed = true
-                gc.BeginFigure(new Point(0.0, 0.0), true, true);
-                gc.LineTo(new Point(50, 0), true, true);
-                gc.LineTo(new Point(50, 100), true, true);
-                gc.LineTo(new Point(0, 100), true, true);
-                gc.LineTo(new Point(0, 0), true, true);
-                gc.Close();
-
+                imageFiles = OpenImageDir(config.VOCImageFolder);
+                if (imageFiles.Length > 0)
+                {
+                    LoadImage();
+                }
             }
-            //Debug.WriteLine(Width);
-            //Debug.WriteLine(Height);
-            return geom;
         }
 
         public void SaveXML()
         {
 
-            xmlfile aaa = new xmlfile("aaaa.png", new ImageProperty(500, 300, false, new Node("device", "EX", "EX is new device")), new detectionObject("horse", false, new bndbox(30, 40, 500, 600, true)), new detectionObject("cat", false, new bndbox(20, 20, 30, 30, true)));
-            XMLhelper xl = new XMLhelper();
-            xl.AddDeclaration("1.0", "utf-8", "true");
-            xl.BuildXML(aaa);
-            xl.Save("aaaa.xml");
+            currentVOC?.Save("");
         }
 
-        public void ReadXML()
+        public void ReadXML(string path)
         {
-            XMLhelper xl = new XMLhelper("aaaa.xml");
+            currentVOC.Load(path);
 
+        }
+
+        public string FindImageDir()
+        {
+            var openFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
+            if (!string.IsNullOrWhiteSpace(config.VOCImageFolder) && Directory.Exists(config.VOCImageFolder))
+            {
+                openFolderDialog.SelectedPath = config.VOCImageFolder;
+            }
+            if(openFolderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                config.VOCImageFolder = openFolderDialog.SelectedPath;
+                imageFiles = OpenImageDir(config.VOCImageFolder);
+                if (imageFiles.Length>0)
+                {
+                    config.imageIndex = 0;
+                    LoadImage();
+                }
+            }
+            return null;
+        }
+
+        public string[] OpenImageDir(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                return Directory.GetFiles(path, "*", SearchOption.AllDirectories).Where(s => s.EndsWith(".png") || s.EndsWith(".jpg")).ToArray();
+            }
+            else
+            {
+                try
+                {
+                    Directory.CreateDirectory(path);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+                return null;
+            }
+        }
+
+        public void FindXMLDir()
+        {
+            var openFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
+            if(!str)
+        }
+
+        public string[] OpenXMLDir(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                return Directory.GetFiles(path, "*.xml", SearchOption.AllDirectories);
+            }
+            else
+            {
+                try
+                {
+                    Directory.CreateDirectory(path);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                    throw;
+                }
+                return null;
+            }
+        }
+
+        public void Next()
+        {
+            config.imageIndex++;
+            LoadImage();
+        }
+
+        public void prev()
+        {
+            config.imageIndex--;
+            LoadImage();
+        }
+
+        public void LoadImage()
+        {
+            if(imageFiles!=null && imageFiles.Length > 0)
+            {
+                config.imageIndex = Math.Max(0, Math.Min(config.imageIndex, imageFiles.Length - 1));
+                var path = imageFiles[config.imageIndex];
+                BitmapImage bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(path);
+                bitmap.EndInit();
+                image.Source = bitmap;
+            }
         }
 
         private void image_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -108,43 +192,63 @@ namespace ImageLabeler
             rect.SecondPoint = position;
         }
 
-        Point start, end;
-        Point startWithScale, endWithScale;
-
-        private void image_MouseUp(object sender, MouseButtonEventArgs e)
+        protected override void OnClosing(CancelEventArgs e)
         {
-            var bbox = rect as BBox;
-            if (bbox != null)
+            var workDir = Directory.GetCurrentDirectory();
+            string config_str = $"VOCImageFolder:{config.VOCImageFolder}\n" +
+                $"VOCXMLFolder:{config.VOCXMLFolder}\n" +
+                $"imageIndex:{config.imageIndex}";
+          
+            File.WriteAllText(System.IO.Path.Combine(workDir, "config.txt"), config_str);
+            base.OnClosing(e);
+        }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+            var workDir = Directory.GetCurrentDirectory();
+            var config_path = System.IO.Path.Combine(workDir, "config.txt");
+            if (File.Exists(config_path))
             {
-                bbox.SecondPoint = e.GetPosition(image);
+                var config_content = File.ReadLines(config_path).ToArray();
+                foreach (var line in config_content)
+                {
+                    if (line.StartsWith("VOCImageFolder"))
+                    {
+                        config.VOCImageFolder = line.Replace("VOCImageFolder:", "");
+                    }
+                    if (line.StartsWith("VOCXMLFolder"))
+                    {
+                        config.VOCXMLFolder = line.Replace("VOCXMLFolder", "");
+                    }
+                    if (line.StartsWith("imageIndex"))
+                    {
+                        if(int.TryParse(line.Replace("imageIndex",""), out int value)){
+                            config.imageIndex = value;
+                        }
+                    }
+                }
             }
-            rect = null;
         }
 
         private void image_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            rect = new BBox();
-            rect.MouseUp += Rect_MouseUp;
-            rect.RectangleStrokeThickness = 8;
-            //rect.Stroke = Brushes.Red;
-            rect.Opacity = 0.5;
-            var point = e.GetPosition((Image)sender);
 
-            rect.FirstPoint = point;
-
-            Canvas.SetLeft(rect, point.X);
-            Canvas.SetTop(rect, point.Y);
-            canvas.Children.Add(rect);
         }
 
-        private void Rect_MouseUp(object sender, MouseButtonEventArgs e)
+        private void image_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            var bbox = sender as BBox;
-            if (bbox != null)
-            {
-                bbox.SecondPoint = e.GetPosition(image);
-            }
-            rect = null;
+
+        }
+
+        private void open_image_dir_Click(object sender, RoutedEventArgs e)
+        {
+            FindImageDir();
+        }
+
+        private void open_label_dir_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

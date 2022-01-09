@@ -26,8 +26,8 @@
     <DockPanel LastChildFill="True">
         <DockPanel DockPanel.Dock="Left" LastChildFill="True" Width="150">
             <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
-                <Button >open image dir</Button>
-                <Button >open label dir</Button>
+                <Button Click="open_image_dir_Click">open image dir</Button>
+                <Button Click="open_label_dir_Click">open label dir</Button>
                 <Button >previous</Button>
                 <Button >next</Button>
                 <Button >mark</Button>
@@ -42,7 +42,7 @@
             <TextBlock DockPanel.Dock="Bottom" Margin="10" Name="label"></TextBlock>
         </DockPanel>
         <Canvas Name="canvas" >
-            <Image Name="image" MouseDown="image_MouseDown" MouseUp="image_MouseUp"></Image>
+            <Image Name="image" MouseDown="image_MouseDown" MouseUp="image_MouseUp" MouseMove="image_MouseMove"></Image>
             <JLib:EditedShapeContentControl Width="100" Height="100" Name="t">
                 <Rectangle Width="{Binding ElementName=t,Path=ActualWidth}" Height="{Binding ElementName=t,Path=ActualHeight}" Fill="AliceBlue"></Rectangle>
             </JLib:EditedShapeContentControl>

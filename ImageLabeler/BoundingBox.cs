@@ -48,20 +48,6 @@ namespace ImageLabeler
     /// </summary>
     ///     
 
-    [TemplatePart(Name = "TopEdge", Type = typeof(EditedThumb))]
-    [TemplatePart(Name = "LeftEdge", Type = typeof(EditedThumb))]
-    [TemplatePart(Name = "RightEdge", Type = typeof(EditedThumb))]
-    [TemplatePart(Name = "BottomEdge", Type = typeof(EditedThumb))]
-
-    [TemplatePart(Name = "TopMidBox", Type = typeof(EditedThumb))]
-    [TemplatePart(Name = "RightMidBox", Type = typeof(EditedThumb))]
-    [TemplatePart(Name = "LeftMidBox", Type = typeof(EditedThumb))]
-    [TemplatePart(Name = "BottomMidBox", Type = typeof(EditedThumb))]
-
-    [TemplatePart(Name = "TopLeftCornerBox", Type = typeof(EditedThumb))]
-    [TemplatePart(Name = "TopRightCornerBox", Type = typeof(EditedThumb))]
-    [TemplatePart(Name = "BottomLeftCornerBox", Type = typeof(EditedThumb))]
-    [TemplatePart(Name = "BottomRightCornerBox", Type = typeof(EditedThumb))]
     public class BBox : Control
     {
         public bool IsEdit
