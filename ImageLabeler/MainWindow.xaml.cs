@@ -49,16 +49,25 @@ namespace ImageLabeler
         private AnnotatoerConfig config;
         private AnnotatorStatus status;
         private EditedShapeContentControl currentTarget = null;
-
+        private ContextMenu RightButtonMenu = null;
         public MainWindow()
         {
             InitializeComponent();
+            InitialAssist();
             if (!string.IsNullOrWhiteSpace(config.VOCImageFolder) && Directory.Exists(config.VOCImageFolder))
             {
                 imageFiles = OpenImageDir(config.VOCImageFolder);
                 if (imageFiles.Length > 0)
                 {
                     LoadImage();
+                }
+            }
+            if (!string.IsNullOrWhiteSpace(config.VOCXMLFolder) && Directory.Exists(config.VOCXMLFolder))
+            {
+                labelFiles = OpenLabelDir(config.VOCXMLFolder);
+                if (labelFiles.Length > 0)
+                {
+                    LoadLabel();
                 }
             }
         }
@@ -177,6 +186,10 @@ namespace ImageLabeler
 
         public void Next()
         {
+            while (canvas.Children.Count>4)
+            {
+                canvas.Children.RemoveAt(canvas.Children.Count - 1);
+            }
             if (currentVOC.IsChanged)
             {
                 switch (MessageBox.Show("","",MessageBoxButton.YesNoCancel))
@@ -195,10 +208,27 @@ namespace ImageLabeler
             config.imageIndex++;
             LoadImage();
             LoadLabel();
+            if (imageFiles != null && imageFiles.Length > 0)
+            {
+                this.Title = $"{config.imageIndex + 1}/{imageFiles.Count()}";
+            }
         }
 
         public void prev()
         {
+            while (canvas.Children.Count > 4)
+            {
+                canvas.Children.RemoveAt(canvas.Children.Count - 1);
+            }
+            for (int i = 0; i < canvas.Children.Count; i++)
+            {
+                UIElement item = canvas.Children[i];
+                if (item.Equals(horizonalLine) || item.Equals(verticalLine) || item.Equals(rectangle) || item.Equals(image))
+                {
+                    continue;
+                }
+                canvas.Children.RemoveAt(i);
+            }
             if (currentVOC.IsChanged)
             {
                 switch (MessageBox.Show("", "", MessageBoxButton.YesNoCancel))
@@ -217,6 +247,10 @@ namespace ImageLabeler
             config.imageIndex--;
             LoadImage();
             LoadLabel();
+            if (imageFiles != null && imageFiles.Length > 0)
+            {
+                this.Title = $"{config.imageIndex + 1}/{imageFiles.Count()}";
+            }
         }
 
         private System.Drawing.Bitmap TranslateBitmap(string path)
@@ -299,30 +333,49 @@ namespace ImageLabeler
             {
                 Width = xmax - xmin,
                 Height = ymax - ymin,
-                Content = new Rectangle()
+                Content = new Label()
                 {
                     VerticalAlignment = VerticalAlignment.Stretch,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
-                    Fill = Brushes.Red,
+                    Background = Brushes.Red,
                     ToolTip = name,
-                    Opacity = 0.25,
+                    Opacity = 0.8,
+                    Content = name,
+                    FontSize = 20,
+                    FontWeight = FontWeights.Bold,
+                    HorizontalContentAlignment = HorizontalAlignment.Center,
+                    VerticalContentAlignment = VerticalAlignment.Center,
+                    ContextMenu = RightButtonMenu,
                 },
                 Name = name,
             };
             bbox.GotMouseCapture += Bbox_GotMouseCapture;
             bbox.LostMouseCapture += Bbox_LostMouseCapture;
+
             bbox.KeyDown += Bbox_KeyDown;
+            ((FrameworkElement)bbox.Content).KeyDown += Bbox_KeyDown;
+            ((FrameworkElement)bbox.Content).MouseRightButtonDown += Bbox_MouseRightButtonDown;
             bbox.Tag = bndbox;
             canvas.Children.Add(bbox);
             Canvas.SetLeft(bbox, xmin);
             Canvas.SetTop(bbox, ymin);
         }
 
+        private void Bbox_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+           
+            this.RightButtonMenu.IsOpen = true;
+        }
+
         private void Bbox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Delete)
             {
-
+                int a = 0;
+            }
+            if (e.Key == Key.S)
+            {
+                int a = 0;
             }
         }
 
@@ -398,13 +451,9 @@ namespace ImageLabeler
         private Rectangle rectangle;
         private Point startPoint;
 
-        private void image_MouseDown(object sender, MouseButtonEventArgs e)
+
+        private void InitialAssist()
         {
-            if (status.CreatingObject == false)
-            {
-                return;
-            }
-            startPoint = e.GetPosition(canvas);
             if (verticalLine == null)
             {
                 verticalLine = new Line()
@@ -451,6 +500,33 @@ namespace ImageLabeler
                 };
                 canvas.Children.Add(rectangle);
             }
+            if (RightButtonMenu == null)
+            {
+                RightButtonMenu = new ContextMenu() 
+                {
+                    IsEnabled = true,
+                };
+                MenuItem delete = new MenuItem()
+                {
+                    Header = "delete",
+                };
+                delete.Click += Delete_Click;
+                RightButtonMenu.Items.Add(delete);
+            }
+        }
+
+        private void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void image_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (status.CreatingObject == false)
+            {
+                return;
+            }
+            startPoint = e.GetPosition(canvas);
 
             verticalLine.Visibility = Visibility.Visible;
             horizonalLine.Visibility = Visibility.Visible;
@@ -569,7 +645,7 @@ namespace ImageLabeler
 
         private void Save_Xml_Click(object sender, RoutedEventArgs e)
         {
-
+            SaveXML();
         }
     }
 }

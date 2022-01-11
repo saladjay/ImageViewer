@@ -192,6 +192,8 @@ namespace ImageLabeler
             private set { _hasInit = value; }
         }
 
+        public bool HasImageInfoCompleted => Annotation != null && Path != null && FileName != null && Size != null && Width != null && Height != null && Depth != null;
+
         public bool IsChanged { get; private set; }
 
         public XmlNode Annotation => VOC?.SelectSingleNode("annotation");

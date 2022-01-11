@@ -15,6 +15,7 @@
         </Style>
         <Style TargetType="JLib:EditedShapeContentControl" BasedOn="{StaticResource {x:Type JLib:EditedShapeContentControl}}">
             <Setter Property="Opacity" Value="0.5"/>
+            <Setter Property="ThumbBrush" Value="Black"/>
             <Setter Property="AutoHideEditedThumb" Value="False"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
