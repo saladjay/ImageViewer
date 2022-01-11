@@ -170,9 +170,14 @@ namespace ImageLabeler
             HasInit = true;
         }
 
-        public void Load(string path)
+        public bool Load(string path)
         {
+            if (_hasInit && IsChanged)
+            {
+                return false;
+            }
             VOC.Load(path);
+            return true;
         }
 
 
@@ -187,6 +192,7 @@ namespace ImageLabeler
             private set { _hasInit = value; }
         }
 
+        public bool IsChanged { get; private set; }
 
         public XmlNode Annotation => VOC?.SelectSingleNode("annotation");
 
@@ -238,6 +244,7 @@ namespace ImageLabeler
                 Annotation.AppendChild(device_node);
                 Annotation.AppendChild(BuildSizeNode(width, height, depth));
                 Annotation.AppendChild(segmented_node);
+                IsChanged = true;
                 return true;
             }
         }
@@ -281,6 +288,7 @@ namespace ImageLabeler
                 obj.AppendChild(difficult_node);
                 obj.AppendChild(BuildBndboxNode(xmin, ymin, xmax, ymax));
                 Annotation.AppendChild(obj);
+                IsChanged = true;
                 return true;
             }
         }
@@ -303,9 +311,35 @@ namespace ImageLabeler
             return bndbox_node;
         }
 
+        public void RemoveBndboxNode(XmlNode bndbox)
+        {
+            Annotation.RemoveChild(bndbox);
+            IsChanged = true;
+        }
+
+        public void RemoveBndboxNode(string name, int xmin, int ymin, int xmax ,int ymax)
+        {
+            XmlNode removeNode = null;
+            foreach (XmlNode node in Objects)
+            {
+                var bndbox = node.SelectSingleNode("bndbox");
+                if (node.SelectSingleNode("name").InnerText == name
+                    && bndbox != null
+                    && int.TryParse(bndbox.SelectSingleNode("xmin").InnerText, out int v1) && v1 == xmin
+                    && int.TryParse(bndbox.SelectSingleNode("ymin").InnerText, out int v2) && v2 == ymin
+                    && int.TryParse(bndbox.SelectSingleNode("xmax").InnerText, out int v3) && v3 == xmax
+                    && int.TryParse(bndbox.SelectSingleNode("ymax").InnerText, out int v4) && v4 == ymax)
+                {
+                    removeNode = node;
+                }
+            }
+            RemoveBndboxNode(removeNode);
+        }
+
         public void Save(string path)
         {
             VOC.Save(path);
+            IsChanged = false;
         }
     }
 }

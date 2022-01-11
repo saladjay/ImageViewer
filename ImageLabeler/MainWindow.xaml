@@ -6,7 +6,7 @@
         xmlns:JLib="clr-namespace:JayCustomControlLib;assembly=JayCustomControlLib"
         xmlns:local="clr-namespace:ImageLabeler"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525" Name="mainwindow">
+        Title="MainWindow" Height="720" Width="1280" Name="mainwindow">
     <Window.Resources>
         <Style TargetType="Button">
             <Setter Property="Width" Value="100"></Setter>
@@ -22,15 +22,27 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <Style TargetType="{x:Type local:BBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type local:BBox}">
+                        <JLib:EditedShapeContentControl Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                            <Control Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" Background="Green" Opacity="0.5"></Control>
+                        </JLib:EditedShapeContentControl>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <DockPanel LastChildFill="True">
         <DockPanel DockPanel.Dock="Left" LastChildFill="True" Width="150">
             <StackPanel Orientation="Vertical" DockPanel.Dock="Top">
                 <Button Click="open_image_dir_Click">open image dir</Button>
                 <Button Click="open_label_dir_Click">open label dir</Button>
-                <Button >previous</Button>
-                <Button >next</Button>
-                <Button >mark</Button>
+                <Button Click="Prev_image_Click">previous</Button>
+                <Button Click="Next_image_Click">next</Button>
+                <Button Click="Creating_Object_Click">create bbox</Button>
+                <Button Click="Save_Xml_Click">save</Button>
                 <TextBlock Name="is_marked" Width="100" Height="30" Margin="5"></TextBlock>
                 <TextBlock Name="mark_count" Width="100" Height="30" Margin="5"></TextBlock>
                 <TextBlock Name="mouseX" Width="100" Height="100" Margin="5"></TextBlock>
@@ -42,11 +54,8 @@
             <TextBlock DockPanel.Dock="Bottom" Margin="10" Name="label"></TextBlock>
         </DockPanel>
         <Canvas Name="canvas" >
-            <Image Name="image" MouseDown="image_MouseDown" MouseUp="image_MouseUp" MouseMove="image_MouseMove"></Image>
-            <JLib:EditedShapeContentControl Width="100" Height="100" Name="t">
-                <Rectangle Width="{Binding ElementName=t,Path=ActualWidth}" Height="{Binding ElementName=t,Path=ActualHeight}" Fill="AliceBlue"></Rectangle>
-            </JLib:EditedShapeContentControl>
+            <Image Name="image" MouseDown="image_MouseDown" MouseUp="image_MouseUp" MouseMove="image_MouseMove" Stretch="None"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" ></Image>
+
         </Canvas>
     </DockPanel>
-
 </Window>
