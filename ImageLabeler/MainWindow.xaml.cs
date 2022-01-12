@@ -355,6 +355,7 @@ namespace ImageLabeler
 
             bbox.KeyDown += Bbox_KeyDown;
             bbox.MouseRightButtonDown += Bbox_MouseRightButtonDown;
+            bbox.ContextMenuOpening += RightButtonMenu_ContextMenuOpening;
             ((FrameworkElement)bbox.Content).KeyDown += Bbox_KeyDown;
             ((FrameworkElement)bbox.Content).MouseRightButtonDown += Bbox_MouseRightButtonDown;
             bbox.Tag = bndbox;
@@ -382,6 +383,10 @@ namespace ImageLabeler
 
         private void Bbox_LostMouseCapture(object sender, MouseEventArgs e)
         {
+            if (status.DuringModifing)
+            {
+                return;
+            }
             currentTarget = null;
         }
 
@@ -512,7 +517,6 @@ namespace ImageLabeler
                 };
                 delete.Click += Delete_Click;
                 RightButtonMenu.Items.Add(delete);
-                RightButtonMenu.ContextMenuOpening += RightButtonMenu_ContextMenuOpening;
             }
         }
 
@@ -527,6 +531,7 @@ namespace ImageLabeler
             {
                 canvas.Children.Remove(currentTarget);
                 currentTarget = null;
+                status.DuringModifing = false;
             }
         }
 
