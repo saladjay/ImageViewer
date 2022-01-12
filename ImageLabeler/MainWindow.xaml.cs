@@ -41,7 +41,7 @@ namespace ImageLabeler
             public bool CreatingObject;
             public bool ChangingBBox;
             public bool ChangingCategory;
-
+            public bool DuringModifing;
         }
 
         private string[] imageFiles = null;
@@ -50,6 +50,7 @@ namespace ImageLabeler
         private AnnotatorStatus status;
         private EditedShapeContentControl currentTarget = null;
         private ContextMenu RightButtonMenu = null;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -345,14 +346,15 @@ namespace ImageLabeler
                     FontWeight = FontWeights.Bold,
                     HorizontalContentAlignment = HorizontalAlignment.Center,
                     VerticalContentAlignment = VerticalAlignment.Center,
-                    ContextMenu = RightButtonMenu,
                 },
                 Name = name,
+                ContextMenu = RightButtonMenu,
             };
             bbox.GotMouseCapture += Bbox_GotMouseCapture;
             bbox.LostMouseCapture += Bbox_LostMouseCapture;
 
             bbox.KeyDown += Bbox_KeyDown;
+            bbox.MouseRightButtonDown += Bbox_MouseRightButtonDown;
             ((FrameworkElement)bbox.Content).KeyDown += Bbox_KeyDown;
             ((FrameworkElement)bbox.Content).MouseRightButtonDown += Bbox_MouseRightButtonDown;
             bbox.Tag = bndbox;
@@ -363,8 +365,7 @@ namespace ImageLabeler
 
         private void Bbox_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-           
-            this.RightButtonMenu.IsOpen = true;
+            currentTarget = (EditedShapeContentControl)sender;
         }
 
         private void Bbox_KeyDown(object sender, KeyEventArgs e)
@@ -451,7 +452,6 @@ namespace ImageLabeler
         private Rectangle rectangle;
         private Point startPoint;
 
-
         private void InitialAssist()
         {
             if (verticalLine == null)
@@ -512,12 +512,22 @@ namespace ImageLabeler
                 };
                 delete.Click += Delete_Click;
                 RightButtonMenu.Items.Add(delete);
+                RightButtonMenu.ContextMenuOpening += RightButtonMenu_ContextMenuOpening;
             }
+        }
+
+        private void RightButtonMenu_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            status.DuringModifing = true;
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            if (currentTarget != null)
+            {
+                canvas.Children.Remove(currentTarget);
+                currentTarget = null;
+            }
         }
 
         private void image_MouseDown(object sender, MouseButtonEventArgs e)
